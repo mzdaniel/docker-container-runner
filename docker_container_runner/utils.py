@@ -1,6 +1,7 @@
 import yaml
 import sys
 import os
+import re
 import bgtunnel
 from bgtunnel import SSHTunnelError
 
@@ -12,7 +13,8 @@ def read_appconfig(filename):
         print "no filename given, or incorrect file"
         return err
 
-    config = yaml.load(stream)
+    config = yaml.load(os.path.expandvars(re.sub(
+        r'\%([a-zA-Z0-9\-_]+)',r'\1=$\1', stream.read())))
 
     directives = {}
 
@@ -124,7 +126,7 @@ def read_settings(filename='settings.yml'):
         print "no filename given, or incorrect file"
         return err
 
-    settings = yaml.load(stream)
+    settings = yaml.load(os.path.expandvars(stream.read()))
 
     items = settings['default']
     items['registry_login'] = try_replace_vars(items.get("registry_login", None))
